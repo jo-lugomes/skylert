@@ -74,8 +74,7 @@
             background: linear-gradient(145deg, #071e52 0%, var(--blue-deep) 30%, var(--blue-mid) 65%, var(--blue-light) 100%);
             background-attachment: fixed;
         }
-
-        /* subtle noise texture overlay */
+ 
         body::before {
             content: '';
             position: fixed;
@@ -93,7 +92,6 @@
             margin: 0 auto;
         }
 
-        /* ── HEADER ── */
         .header {
             display: flex;
             align-items: center;
@@ -176,7 +174,6 @@
             background: #dc2626;
         }
 
-        /* ── SEARCH ── */
         .search-bar {
             position: relative;
             display: flex;
@@ -234,7 +231,6 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* ── GRID ── */
         .grid-container {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -248,7 +244,6 @@
             }
         }
 
-        /* ── CARD ── */
         .card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-bd);
@@ -278,7 +273,6 @@
             font-size: 16px;
         }
 
-        /* ── CLIMA ATUAL ── */
         .clima-row {
             display: flex;
             justify-content: space-between;
@@ -391,7 +385,6 @@
             color: #fff;
         }
 
-        /* ── ALERTAS ── */
         .card-alertas {
             background: rgba(255, 255, 255, 0.08);
             border: 1.5px solid rgba(255, 193, 7, 0.40);
@@ -506,10 +499,6 @@
             }
         }
 
-        /* =========================================================
-   ANIMAÇÕES GLOBAIS
-========================================================= */
-
         @keyframes fadeUp {
             from {
                 opacity: 0;
@@ -574,15 +563,6 @@
             }
         }
 
-        /* =========================================================
-   FUNDO ANIMADO
-========================================================= */
-
-
-        /* =========================================================
-   ENTRADA DOS CARDS
-========================================================= */
-
         .card,
         .card-alertas {
             animation: fadeUp 0.7s ease;
@@ -592,10 +572,6 @@
                 background 0.25s ease,
                 box-shadow 0.25s ease;
         }
-
-        /* =========================================================
-   HOVER NOS CARDS
-========================================================= */
 
         .card:hover,
         .card-alertas:hover {
@@ -607,17 +583,9 @@
                 inset 0 0 0 1px rgba(255, 255, 255, 0.05);
         }
 
-        /* =========================================================
-   ÍCONE DO CLIMA FLUTUANDO
-========================================================= */
-
         .clima-icon-area {
             animation: floatIcon 4s ease-in-out infinite;
         }
-
-        /* =========================================================
-   TEMPERATURA COM GLOW
-========================================================= */
 
         .temp-grande {
             text-shadow:
@@ -626,10 +594,6 @@
 
             animation: glowPulse 4s ease-in-out infinite;
         }
-
-        /* =========================================================
-   BOTÕES MAIS MODERNOS
-========================================================= */
 
         #btn-buscar,
         .btn-salvar,
@@ -649,7 +613,6 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
         }
 
-        /* efeito shine */
         #btn-buscar::before,
         .btn-salvar::before,
         .btn-sair::before {
@@ -671,10 +634,6 @@
             animation: shine 0.9s ease;
         }
 
-        /* =========================================================
-   INPUTS MAIS FLUIDOS
-========================================================= */
-
         .search-bar,
         #alert-cidade {
             transition:
@@ -692,10 +651,6 @@
                 0 0 30px rgba(21, 112, 239, 0.18);
         }
 
-        /* =========================================================
-   DETALHES COM EFEITO HOVER
-========================================================= */
-
         .detalhe-item {
             transition:
                 transform 0.25s ease,
@@ -709,10 +664,6 @@
             border-color: rgba(255, 255, 255, 0.18);
         }
 
-        /* =========================================================
-   PREVISÃO COM ANIMAÇÃO
-========================================================= */
-
         .previsao-dia {
             transition:
                 padding-left 0.25s ease,
@@ -723,10 +674,6 @@
             padding-left: 10px;
             background: rgba(255, 255, 255, 0.04);
         }
-
-        /* =========================================================
-   AUTOCOMPLETE MAIS PREMIUM
-========================================================= */
 
         #lista-cidades {
             animation: fadeUp 0.25s ease;
@@ -743,9 +690,6 @@
             padding-left: 18px;
         }
 
-        /* =========================================================
-   LOGO MAIS VIVA
-========================================================= */
 
         .logo-bubble {
             position: relative;
@@ -793,9 +737,6 @@
             }
         }
 
-        /* =========================================================
-   WEATHER PARTICLES
-========================================================= */
 
         #weather-particles {
             position: fixed;
@@ -830,8 +771,6 @@
             }
         }
 
-        /* NÉVOA */
-
         .fog-particle {
             position: absolute;
 
@@ -857,7 +796,6 @@
             }
         }
 
-        /* SOL */
 
         .sun-glow {
             position: absolute;
@@ -892,10 +830,6 @@
             }
         }
 
-        /* =========================================================
-   CLOUDS
-========================================================= */
-
         .cloud-layer {
             position: absolute;
 
@@ -923,9 +857,6 @@
             }
         }
 
-        /* =========================================================
-   ESTRELAS
-========================================================= */
 
         .star {
             position: absolute;
@@ -1090,14 +1021,13 @@
             <div id="lista-cidades"></div>
             <button id="btn-buscar">Ver Clima</button>
         </div>
-
+ 
         <!-- GRADE PRINCIPAL -->
         <div class="grid-container">
 
             <!-- COLUNA ESQUERDA -->
             <div>
 
-                <!-- Clima Atual -->
                 <div class="card">
                     <div class="card-title"><i class="ti ti-cloud"></i> Clima agora em</div>
                     <div class="clima-row">
@@ -1113,7 +1043,6 @@
                     </div>
                 </div>
 
-                <!-- Detalhes Adicionais -->
                 <div class="card">
                     <div class="card-title"><i class="ti ti-adjustments-horizontal"></i> Detalhes adicionais</div>
                     <div class="detalhes-grid">
@@ -1140,7 +1069,6 @@
                     </div>
                 </div>
 
-                <!-- Previsão -->
                 <div class="card">
                     <div class="card-title"><i class="ti ti-calendar-week"></i> Previsão para os próximos dias</div>
                     <div id="previsao-lista">
@@ -1150,7 +1078,6 @@
 
             </div>
 
-            <!-- COLUNA DIREITA — ALERTAS -->
             <div>
                 <div class="card-alertas">
                     <div class="card-title" style="color: var(--amber);">
@@ -1186,7 +1113,6 @@
         </div>
     </div>
 
-    <!-- SCRIPTS: FIREBASE + FLASK (lógica original 100% preservada) -->
     <script>
         // Data atual no header
         const hoje = new Date();
@@ -1232,16 +1158,12 @@
             }
         });
 
-        // Botão Sair
         btnSair.addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "index.html";
             });
         });
 
-        // =======================================================
-        // GRAVAÇÃO DAS CONFIGURAÇÕES DE ALERTAS (FIRESTORE)
-        // =======================================================
         const btnSalvarAlertas = document.getElementById('btn-salvar-alertas');
         const msgAlertas = document.getElementById('msg-alertas');
 
@@ -1284,9 +1206,6 @@
             }
         }
 
-        // =======================================================
-        // INTEGRAÇÃO COM A API DO BACK-END EM FLASK/PYTHON
-        // =======================================================
         const inputCidade = document.getElementById('input-cidade');
         const listaCidades = document.getElementById('lista-cidades');
         const btnBuscar = document.getElementById('btn-buscar');
@@ -1294,10 +1213,6 @@
         // Mapeamento dos novos elementos do painel de alertas
         const alertCidade = document.getElementById('alert-cidade');
         const listaCidadesAlertas = document.getElementById('lista-cidades-alertas');
-
-        // =======================================================
-        // AUTOCOMPLETE DE CIDADES
-        // =======================================================
 
         inputCidade.addEventListener('input', async () => {
 
