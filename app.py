@@ -5,21 +5,15 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Libera CORS APENAS para os seus ambientes seguros
 ORIGENS_PERMITIDAS = [
-    "http://127.0.0.1:5500",  
+    "http://127.0.0.1:5500",
     "http://localhost:5500",
     "http://127.0.0.1:5000",
     "http://localhost:5000",
-    "https://skylert.vercel.app"  # Seu domínio oficial da Vercel
+    "https://skylert.vercel.app"
 ]
 
-# Libera CORS para o frontend
 CORS(app, resources={r"/api/*": {"origins": ORIGENS_PERMITIDAS}})
-
-# =========================================================
-# TRADUÇÃO DOS CÓDIGOS DE CLIMA
-# =========================================================
 
 TRADUCAO_CLIMA = {
     0: "Céu Limpo", 1: "Principalmente Limpo", 2: "Parcialmente Nublado", 3: "Nublado",
@@ -27,20 +21,19 @@ TRADUCAO_CLIMA = {
     61: "Chuva Leve", 63: "Chuva", 65: "Chuva Forte", 80: "Pancadas de Chuva", 95: "Tempestade"
 }
 
-# =========================================================
-# API DE PREVISÃO
-# =========================================================
-
 @app.route("/api/previsao", methods=["GET"])
 def obter_previsao():
+    
+    # Retorna as condições climáticas atuais e a previsão dos próximos 3 dias
+    # para uma cidade. Aceita nome da cidade via query param 'cidade', ou
+    # coordenadas diretas via 'lat' e 'lon'.
+    
     cidade = request.args.get("cidade", "Sao Paulo")
     latitude_param = request.args.get("lat")
     longitude_param = request.args.get("lon")
 
     try:
-        # ==========================================
-        # BUSCA COORDENADAS
-        # ==========================================
+        # Usa coordenadas diretas se fornecidas; caso contrário, faz geocoding pelo nome
         if latitude_param and longitude_param:
             latitude = float(latitude_param)
             longitude = float(longitude_param)
@@ -67,12 +60,9 @@ def obter_previsao():
             estado = resultado.get("admin1", "")
             nome_cidade = f"{resultado['name']} - {estado}"
 
-        # ==========================================
-        # BUSCA PREVISÃO DO TEMPO
-        # ==========================================
+        # Busca previsão com dados atuais + probabilidade de chuva horária + máx/mín diários
         weather_url = "https://api.open-meteo.com/v1/forecast"
 
-        # FORMATO CORRETO DE STRING SEPARADA POR VÍRGULA!
         weather_params = {
             "latitude": latitude,
             "longitude": longitude,
@@ -86,9 +76,6 @@ def obter_previsao():
         weather_response = requests.get(weather_url, params=weather_params, timeout=10)
         dados = weather_response.json()
 
-        # ==========================================
-        # TRAVAS DE SEGURANÇA (PARA DEBUG NO RENDER)
-        # ==========================================
         if "error" in dados:
             motivo = dados.get("reason", "Desconhecido")
             return jsonify({"erro_api_meteo": motivo}), 503
@@ -96,18 +83,13 @@ def obter_previsao():
         if "current" not in dados:
             return jsonify({"erro_bizarro_render": "O Open-Meteo não enviou o current", "retorno_da_api": dados}), 500
 
-        # ==========================================
-        # DADOS ATUAIS
-        # ==========================================
         current = dados["current"]
         codigo_clima = current.get("weather_code", 0)
 
         hourly = dados.get("hourly", {})
         probabilidade_chuva = hourly.get("precipitation_probability", [0])[0] if "precipitation_probability" in hourly else 0
 
-        # ==========================================
-        # PREVISÃO DIÁRIA
-        # ==========================================
+        # Monta a previsão dos próximos 3 dias, ignorando o dia atual
         previsao_diaria = []
         datas = dados.get("daily", {}).get("time", [])
         maximas = dados.get("daily", {}).get("temperature_2m_max", [])
@@ -149,8 +131,13 @@ def obter_previsao():
     except Exception as e:
         return jsonify({"erro_fatal_python": str(e)}), 500
 
+
 @app.route("/api/cidades", methods=["GET"])
 def buscar_cidades():
+    
+    # Retorna sugestões de cidades com base em um termo de busca (mínimo 2 caracteres).
+    # Usado no autocomplete dos campos de cidade no frontend.
+    
     termo = request.args.get("q", "")
     if len(termo) < 2:
         return jsonify([])
@@ -174,6 +161,7 @@ def buscar_cidades():
         return jsonify(cidades)
     except Exception as e:
         return jsonify({"erro_fatal_cidades": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

@@ -6,7 +6,6 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Configuração do Firebase obtida no console do seu projeto
 const firebaseConfig = {
     apiKey: "AIzaSyDguSRkotz8ehCVjuYmwWZOrN36WcFYp9Q",
     authDomain: "skylert-4d51a.firebaseapp.com",
@@ -17,15 +16,13 @@ const firebaseConfig = {
     measurementId: "G-CHHLF8G01K"
 };
 
-// Inicializando os módulos
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Configuração dinâmica da URL da API (Local vs Render)
+// Detecta ambiente para apontar para a API local ou de produção no Render
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE_URL = isLocalhost ? 'http://127.0.0.1:5000' : 'https://skylert-api.onrender.com'; // <-- Substitua pela sua URL do Render
+const API_BASE_URL = isLocalhost ? 'http://127.0.0.1:5000' : 'https://skylert-api.onrender.com';
 
-// Captura de elementos do HTML para manipulação via JS
 const emailInput = document.getElementById('email');
 const senhaInput = document.getElementById('senha');
 const btnEntrar = document.getElementById('btn-entrar');
@@ -33,13 +30,13 @@ const btnCadastrar = document.getElementById('btn-cadastrar');
 const mensagemDiv = document.getElementById('mensagem');
 const authContainer = document.getElementById('auth-container');
 
-// Função utilitária para centralizar mensagens na tela
 function mostrarMensagem(texto, cor = 'red') {
     mensagemDiv.textContent = texto;
     mensagemDiv.style.color = cor;
 }
 
-// --- 1. PROCESSO DE CADASTRO ---
+// ─── CADASTRO ─────────────────────────────────────────────────────
+
 btnCadastrar.addEventListener('click', () => {
     const email = emailInput.value.trim();
     const senha = senhaInput.value;
@@ -58,35 +55,29 @@ btnCadastrar.addEventListener('click', () => {
         });
 });
 
-// --- 2. PROCESSO DE LOGIN ---
+// ─── LOGIN ────────────────────────────────────────────────────────
+
 btnEntrar.addEventListener('click', () => {
     realizarLogin();
 });
 
+// Permite disparar o login com Enter nos campos de e-mail e senha
 senhaInput.addEventListener('keydown', (e) => {
-
-    if (e.key === 'Enter') {
-        realizarLogin();
-    }
-
+    if (e.key === 'Enter') realizarLogin();
 });
 
 emailInput.addEventListener('keydown', (e) => {
-
-    if (e.key === 'Enter') {
-        realizarLogin();
-    }
-
+    if (e.key === 'Enter') realizarLogin();
 });
 
-// --- 3. MONITORAMENTO DE ESTADO ---
-// Essa função ouve em tempo real se há um usuário ativo. 
-// Se houver, manda ele automaticamente para o dashboard sem precisar digitar login novamente.
+// ─── MONITORAMENTO DE AUTENTICAÇÃO ────────────────────────────────
+
+// Se já houver sessão ativa, redireciona direto ao dashboard sem precisar logar novamente.
+// Se não houver, revela o formulário de login.
 onAuthStateChanged(auth, (user) => {
     if (user) {
         window.location.href = "dashboard.html";
     } else {
-        // Se deslogado, revela o formulário e limpa o texto de carregamento inicial
         authContainer.classList.remove('hidden');
         mostrarMensagem("");
         emailInput.value = "";
@@ -94,7 +85,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Função de mapeamento para traduzir erros técnicos do Firebase para o português
+// Traduz os códigos de erro do Firebase para mensagens amigáveis em português
 function obterMensagemErroAmigavel(codigoErro) {
     switch (codigoErro) {
         case "auth/invalid-email":
@@ -109,8 +100,8 @@ function obterMensagemErroAmigavel(codigoErro) {
             return "Ocorreu um erro inesperado.";
     }
 }
-async function realizarLogin() {
 
+async function realizarLogin() {
     const email = emailInput.value.trim();
     const senha = senhaInput.value;
 
@@ -120,90 +111,48 @@ async function realizarLogin() {
     }
 
     try {
-
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            senha
-        );
-
-        mostrarMensagem(
-            "Login efetuado com sucesso!",
-            "green"
-        );
-
+        await signInWithEmailAndPassword(auth, email, senha);
+        mostrarMensagem("Login efetuado com sucesso!", "green");
     } catch (error) {
-
-        mostrarMensagem(
-            "Erro ao entrar: " +
-            obterMensagemErroAmigavel(error.code)
-        );
+        mostrarMensagem("Erro ao entrar: " + obterMensagemErroAmigavel(error.code));
     }
 }
+
+// ─── PREVIEW DE CLIMA NA TELA DE LOGIN ───────────────────────────
+
+/**
+ * Carrega os dados climáticos de São Paulo e preenche o card de preview
+ * exibido no lado esquerdo da tela de login, antes do usuário se autenticar.
+ */
 async function carregarPreviewClima() {
-
     try {
-
-        const response = await fetch(
-            `${API_BASE_URL}/api/previsao?cidade=Sao%20Paulo`
-        );
-
+        const response = await fetch(`${API_BASE_URL}/api/previsao?cidade=Sao%20Paulo`);
         const data = await response.json();
 
-        document.getElementById("weather-temp")
-            .textContent = `${data.temp_atual}°`;
+        document.getElementById("weather-temp").textContent = `${data.temp_atual}°`;
+        document.getElementById("weather-condition").textContent = data.condicao;
+        document.getElementById("wind-preview").textContent = `${data.vento} km/h`;
+        document.getElementById("humidity-preview").textContent = `${data.umidade}%`;
+        document.getElementById("rain-preview").textContent = `${data.chuva}%`;
 
-        document.getElementById("weather-condition")
-            .textContent = data.condicao;
+        // Seleciona o ícone correspondente à condição atual
+        const icon = document.getElementById("weather-icon");
+        const cond = data.condicao.toLowerCase();
 
-        document.getElementById("wind-preview")
-            .textContent = `${data.vento} km/h`;
-
-        document.getElementById("humidity-preview")
-            .textContent = `${data.umidade}%`;
-
-        document.getElementById("rain-preview")
-            .textContent = `${data.chuva}%`;
-
-        const icon =
-            document.getElementById("weather-icon");
-
-        const cond =
-            data.condicao.toLowerCase();
-
-        if (cond.includes("tempestade"))
-            icon.className = "ti ti-storm";
-
-        else if (cond.includes("pancadas"))
-            icon.className = "ti ti-cloud-rain";
-
-        else if (cond.includes("chuva"))
-            icon.className = "ti ti-cloud-rain";
-
-        else if (cond.includes("chuvisco"))
-            icon.className = "ti ti-cloud-drizzle";
-
-        else if (cond.includes("névoa") ||
-            cond.includes("neblina"))
-            icon.className = "ti ti-mist";
-
-        else if (cond.includes("nublado"))
-            icon.className = "ti ti-cloud";
-
+        if (cond.includes("tempestade")) icon.className = "ti ti-storm";
+        else if (cond.includes("pancadas")) icon.className = "ti ti-cloud-rain";
+        else if (cond.includes("chuva")) icon.className = "ti ti-cloud-rain";
+        else if (cond.includes("chuvisco")) icon.className = "ti ti-cloud-drizzle";
+        else if (cond.includes("névoa") || cond.includes("neblina")) icon.className = "ti ti-mist";
+        else if (cond.includes("nublado")) icon.className = "ti ti-cloud";
         else {
-
-            if (data.is_day)
-                icon.className = "ti ti-sun";
-            else
-                icon.className = "ti ti-moon";
+            // Diferencia sol de lua conforme período do dia
+            if (data.is_day) icon.className = "ti ti-sun";
+            else icon.className = "ti ti-moon";
         }
 
     } catch (erro) {
-
-        console.error(
-            "Erro ao carregar clima da tela de login:",
-            erro
-        );
+        console.error("Erro ao carregar clima da tela de login:", erro);
     }
 }
 

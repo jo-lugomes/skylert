@@ -5,20 +5,10 @@ from firebase_admin import (
     firestore
 )
 
-# ==========================================
-# INICIALIZA FIREBASE APENAS UMA VEZ
-# ==========================================
-
+# Inicializa o Firebase Admin SDK apenas uma vez para evitar erros de app duplicado
 if not firebase_admin._apps:
-
-    cred = credentials.Certificate(
-        "firebase-chave.json"
-    )
-
+    cred = credentials.Certificate("firebase-chave.json")
     firebase_admin.initialize_app(cred)
 
-# ==========================================
-# FIRESTORE
-# ==========================================
-
+# Instância global do Firestore usada pelos workers e demais módulos
 db = firestore.client()
